@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:16.1
+    container_name: bank-db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: "bank_dev"
