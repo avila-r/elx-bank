@@ -10,6 +10,7 @@ defmodule BankWeb.Router do
 
     resources "/users", UsersController,
       only: [
+        :index,
         :show,
         :create,
         :update,
