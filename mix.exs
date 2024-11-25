@@ -42,7 +42,9 @@ defmodule Bank.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:argon2_elixir, "~> 3.0"}
+      {:argon2_elixir, "~> 3.0"},
+      {:tesla, "~> 1.11"},
+      {:bypass, "~> 2.1", only: :test}
     ]
   end
 
