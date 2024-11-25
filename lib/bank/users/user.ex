@@ -1,4 +1,5 @@
 defmodule Bank.Users.User do
+  alias Bank.Viacep
   import Ecto.Changeset
   use Ecto.Schema
 
@@ -40,6 +41,7 @@ defmodule Bank.Users.User do
     |> unique_constraint(:email)
     |> validate_length(:name, min: 3)
     |> validate_length(:password, min: 8)
+    |> Viacep.Client.validate()
     |> validate_length(:cep, is: 9)
   end
 
