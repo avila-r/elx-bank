@@ -7,13 +7,51 @@ defmodule BankWeb.UsersControllerTest do
   # asserts transaction environment.
   use BankWeb.ConnCase
 
+  alias Bank.Viacep
+
+  import Mox
+
+  setup do
+    body = %{
+      "bairro" => "Centro",
+      "cep" => "36016-320",
+      "complemento" => "de 1201/1202 a 1599/1600",
+      "ddd" => "32",
+      "estado" => "Minas Gerais",
+      "gia" => "",
+      "ibge" => "3136702",
+      "localidade" => "Juiz de Fora",
+      "logradouro" => "Avenida Presidente Itamar Franco",
+      "regiao" => "Sudeste",
+      "siafi" => "4733",
+      "uf" => "MG",
+      "unidade" => ""
+    }
+
+    {:ok, cep: "36016320", expected_body: body}
+  end
+
   describe "create/2" do
-    test "successfully creates user", %{conn: conn} do
+    test "successfully creates user", %{conn: conn, cep: cep, expected_body: body} do
       params = %{
         name: "Renato Ávila",
-        email: "avila.dev@outlook.com",
-        password: "12345678"
+        email: "avila.,dev@outlook.com",
+        password: "12345678",
+        cep: cep
       }
+
+      expect(Viacep.ClientMock, :call, fn _cep ->
+        {:ok, body}
+      end)
+
+      expect(Viacep.ClientMock, :validate, fn changeset ->
+        changeset
+        |> Ecto.Changeset.put_change(
+          :cep,
+          cep
+          |> Viacep.Client.format()
+        )
+      end)
 
       response =
         conn
@@ -30,7 +68,17 @@ defmodule BankWeb.UsersControllerTest do
              } = response
     end
 
-    test "when invalid params are provided, then returns an error", %{conn: conn} do
+    test "when invalid params are provided, then returns an error", %{
+      conn: conn
+    } do
+      expect(Viacep.ClientMock, :call, fn _cep ->
+        {:ok, %{}}
+      end)
+
+      expect(Viacep.ClientMock, :validate, 2, fn changeset ->
+        changeset
+      end)
+
       email = "avila.dev@outlook.com"
 
       conn
