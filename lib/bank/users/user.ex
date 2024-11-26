@@ -1,11 +1,14 @@
 defmodule Bank.Users.User do
-  import Ecto.Changeset
   use Ecto.Schema
+
+  import Ecto.Changeset
 
   def fields, do: __MODULE__.__schema__(:fields) ++ __MODULE__.__schema__(:virtual_fields)
 
   @required_params [:name, :email, :password]
   schema "users" do
+    has_one :account, Bank.Accounts.Account
+
     field :name, :string
     field :email, :string
     field :cep, :string
