@@ -1,5 +1,4 @@
 defmodule Bank.Users.User do
-  alias Bank.Viacep
   import Ecto.Changeset
   use Ecto.Schema
 
@@ -36,12 +35,14 @@ defmodule Bank.Users.User do
   end
 
   defp validate(changeset, fields) do
+    viacep_client = Application.get_env(:bank, :viacep_client, Bank.Viacep.Client)
+
     changeset
     |> validate_required(fields -- [:password])
     |> unique_constraint(:email)
     |> validate_length(:name, min: 3)
     |> validate_length(:password, min: 8)
-    |> Viacep.Client.validate()
+    |> viacep_client.validate()
     |> validate_length(:cep, is: 9)
   end
 
