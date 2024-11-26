@@ -4,6 +4,12 @@ defmodule BankWeb.UsersController do
 
   action_fallback BankWeb.FallbackController
 
+  def index(conn, %{"email" => _email} = params),
+    do: conn |> show(params)
+
+  def index(conn, %{"id" => _id} = params),
+    do: conn |> show(params)
+
   def index(conn, _params) do
     case Users.list() do
       {:ok, users} ->
