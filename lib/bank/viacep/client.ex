@@ -1,8 +1,13 @@
 defmodule Bank.Viacep.Client do
+  @behaviour Bank.Viacep.ClientBehaviour
+
   use Tesla
 
-  plug Tesla.Middleware.BaseUrl, "https://viacep.com.br/ws/"
+  @default_url "https://viacep.com.br/ws"
+  plug Tesla.Middleware.BaseUrl, @default_url
+  plug Tesla.Middleware.JSON
 
+  @impl Bank.Viacep.ClientBehaviour
   def validate(%Ecto.Changeset{changes: %{cep: cep}} = changeset) do
     case call(cep) do
       {:ok, _response} ->
@@ -14,23 +19,28 @@ defmodule Bank.Viacep.Client do
     end
   end
 
-  defp call(cep) do
+  def validate(changeset), do: changeset
+
+  @impl Bank.Viacep.ClientBehaviour
+  def call(url \\ @default_url, cep) do
     with {:ok, valid} <- trim(cep),
-         {:ok, _response} = result <- "#{valid}/json" |> get() |> handle() do
+         {:ok, _response} = result <- "#{url}/#{valid}/json" |> get() |> handle() do
       result
     else
       {:error, _reason} = error -> error
     end
   end
 
-  defp format(cep) do
+  def format(cep) do
     String.replace(cep, ~r/^(\d{5})(\d{3})$/, "\\1-\\2")
   end
 
-  defp trim(cep) do
-    with true <- is_binary(cep),
-         true <- String.match?(cep, ~r/^\d{8}$/) do
-      {:ok, cep}
+  def trim(cep) do
+    cleaned = String.replace(cep, "-", "")
+
+    with true <- is_binary(cleaned),
+         true <- String.match?(cleaned, ~r/^\d{8}$/) do
+      {:ok, cleaned}
     else
       _ -> {:error, "malformed cep"}
     end
@@ -40,6 +50,7 @@ defmodule Bank.Viacep.Client do
     do: {:error, "cep wasn't found"}
 
   defp handle({:ok, %Tesla.Env{status: 200, body: body}}), do: {:ok, body}
-  defp handle({:ok, %Tesla.Env{status: 400}}), do: {:error, "missing or malformed cep"}
-  defp handle({:error, _}), do: {:error, "unexpected error occurred"}
+
+  defp handle({:ok, %Tesla.Env{status: 500}}), do: {:error, "missing or malformed cep"}
+  defp handle({:error, reason}), do: {:error, reason}
 end
