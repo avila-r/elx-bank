@@ -39,10 +39,18 @@ defmodule Bank.Users do
     end
   end
 
+  @spec get(any()) :: {:error, String.t()} | {:ok, any()}
   def get(%{"id" => id}) when is_integer(id) do
     case Repo.get(User, id) do
       nil -> {:error, "user not found"}
       user -> {:ok, user}
+    end
+  end
+
+  def get(%{"id" => id}) do
+    case Integer.parse(id) do
+      {parsed, ""} -> get(%{"id" => parsed})
+      _ -> {:error, "id must be an integer"}
     end
   end
 
@@ -60,7 +68,6 @@ defmodule Bank.Users do
     end
   end
 
-  def get(%{"id" => _id}), do: {:error, "id must be an integer"}
   def get(%{"email" => _email}), do: {:error, "missing or malformed email"}
   def get(_id), do: {:error, "missing or invalid id"}
 end
