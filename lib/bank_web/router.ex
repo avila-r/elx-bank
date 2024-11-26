@@ -16,6 +16,11 @@ defmodule BankWeb.Router do
         :update,
         :delete
       ]
+
+    resources "/accounts", AccountsController,
+      only: [
+        :create
+      ]
   end
 
   # Enable LiveDashboard in development
