@@ -14,14 +14,7 @@ defmodule BankWeb.AccountsController do
 
       {:error, changeset} ->
         conn
-        |> error(:unprocessable_entity, changeset: changeset)
+        |> Errors.send(:unprocessable_entity, changeset: changeset)
     end
-  end
-
-  defp error(conn, status, error) do
-    conn
-    |> put_status(status)
-    |> put_view(BankWeb.ErrorJSON)
-    |> render(:error, error)
   end
 end
