@@ -1,6 +1,9 @@
 defmodule Bank.Users do
-  alias Bank.Repo
-  alias Bank.Users.User
+  alias Bank.{Repo, Users.User, Users.Password}
+
+  @spec login(map()) ::
+          {:ok, %Bank.Users.User{}} | {:error, :unauthorized | String.t()}
+  defdelegate login(request), to: Password, as: :check
 
   def list() do
     with users when users != [] <- Repo.all(User) do
