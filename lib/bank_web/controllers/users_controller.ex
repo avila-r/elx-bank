@@ -1,8 +1,9 @@
 defmodule BankWeb.UsersController do
-  alias Bank.{Users, Users.User}
   use BankWeb, :controller
 
   action_fallback BankWeb.FallbackController
+
+  alias Bank.{Users, Users.User}
 
   def index(conn, %{"email" => _email} = params),
     do: conn |> show(params)
@@ -18,7 +19,7 @@ defmodule BankWeb.UsersController do
 
       {:error, reason} ->
         conn
-        |> error(:not_found, message: reason)
+        |> Errors.send(:not_found, message: reason)
     end
   end
 
@@ -30,7 +31,7 @@ defmodule BankWeb.UsersController do
 
       {:error, reason} ->
         conn
-        |> error(:not_found, message: reason)
+        |> Errors.send(:not_found, message: reason)
     end
   end
 
@@ -43,7 +44,7 @@ defmodule BankWeb.UsersController do
 
       {:error, changeset} ->
         conn
-        |> error(:unprocessable_entity, changeset: changeset)
+        |> Errors.send(:unprocessable_entity, changeset: changeset)
     end
   end
 
@@ -55,7 +56,7 @@ defmodule BankWeb.UsersController do
 
       {:error, changeset} ->
         conn
-        |> error(:unprocessable_entity, changeset: changeset)
+        |> Errors.send(:unprocessable_entity, changeset: changeset)
     end
   end
 
@@ -67,14 +68,7 @@ defmodule BankWeb.UsersController do
 
       {:error, reason} ->
         conn
-        |> error(:bad_request, message: reason)
+        |> Errors.send(:bad_request, message: reason)
     end
-  end
-
-  defp error(conn, status, error) do
-    conn
-    |> put_status(status)
-    |> put_view(BankWeb.ErrorJSON)
-    |> render(:error, error)
   end
 end
