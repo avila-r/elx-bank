@@ -35,7 +35,7 @@ defmodule BankWeb.UsersController do
     end
   end
 
-  def create(conn, params) do
+  def register(conn, params) do
     case params |> Users.insert() do
       {:ok, user} ->
         conn

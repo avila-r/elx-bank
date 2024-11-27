@@ -12,7 +12,8 @@ defmodule BankWeb.Router do
   scope "/auth", BankWeb do
     pipe_through :api
 
-    post "/", AuthController, :login
+    post "/login", AuthController, :login
+    post "/register", UsersController, :register
   end
 
   scope "/api/v1", BankWeb do
@@ -22,7 +23,6 @@ defmodule BankWeb.Router do
       only: [
         :index,
         :show,
-        :create,
         :update,
         :delete
       ]
