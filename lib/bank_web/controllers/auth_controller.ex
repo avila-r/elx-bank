@@ -10,7 +10,7 @@ defmodule BankWeb.AuthController do
       {:ok, user} ->
         conn
         |> json(%{
-          token: user |> Token.new(),
+          bearer: user |> Token.new(),
           user: user |> User.to_json()
         })
 
