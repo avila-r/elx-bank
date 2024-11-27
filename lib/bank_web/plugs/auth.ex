@@ -8,7 +8,7 @@ defmodule BankWeb.Plugs.Auth do
   def call(conn, _opts) do
     with ["Bearer " <> token] <- conn |> get_req_header("authorization"),
          {:ok, context} <- token |> Token.verify() do
-      conn |> assign(:user_id, context)
+      conn |> assign(:users, context)
     else
       _ ->
         conn
